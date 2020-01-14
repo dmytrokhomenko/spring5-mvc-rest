@@ -6,7 +6,6 @@ import guru.springfamework.domain.Category;
 import guru.springfamework.repositories.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -27,7 +26,6 @@ class CategoryServiceTest {
   @Mock
   CategoryRepository categoryRepository;
 
-  @InjectMocks
   CategoryService categoryService;
 
   @BeforeEach
