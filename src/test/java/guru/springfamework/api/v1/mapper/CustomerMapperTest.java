@@ -11,28 +11,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class CustomerMapperTest {
 
-  public static final String VICTOR = "Victor";
-  public static final String FRANKL = "Frankl";
-  public static final long ID = 124L;
+  private static final String VICTOR = "Victor";
+  private static final String FRANKL = "Frankl";
+  private static final long ID = 124L;
 
-  CustomerMapper customerMapper = CustomerMapper.INSTANCE;
+  private CustomerMapper customerMapper = CustomerMapper.INSTANCE;
 
   @Test
-  void categoryToCategoryDTO() {
+  void customerToCustomerDTO() {
 
     //given
     Customer customer = new Customer();
     customer.setFirstName(VICTOR);
     customer.setLastName(FRANKL);
-    customer.setId(ID);
 
     //when
     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
 
     //then
-    assertEquals(ID, customerDTO.getId());
     assertEquals(VICTOR, customerDTO.getFirstname());
     assertEquals(FRANKL, customerDTO.getLastname());
   }
+
+  @Test
+  void customerDTOToCustomer() {
+    //given
+    CustomerDTO customerDTO = new CustomerDTO();
+    customerDTO.setFirstname(VICTOR);
+    customerDTO.setLastname(FRANKL);
+
+    //when
+    Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
+
+    //then
+    assertEquals(VICTOR, customer.getFirstName());
+    assertEquals(FRANKL, customer.getLastName());
+  }
+
 
 }

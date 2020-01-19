@@ -11,24 +11,27 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by Dmytro.Khomenko on 14.01.2020.
  */
-public class CustomerServiceTest {
+class CustomerServiceTest {
 
-  public static final Long ID = 32L;
-  public static final String FIRST_NAME = "Boris";
-  public static final String LAST_NAME = "Patron";
+  private static final Long ID = 32L;
+  private static final String FIRST_NAME = "Boris";
+  private static final String LAST_NAME = "Patron";
 
 
   @Mock
   CustomerRepository customerRepository;
 
-  CustomerService customerService;
+  private CustomerService customerService;
 
   @BeforeEach
   void setUp() {
@@ -38,7 +41,7 @@ public class CustomerServiceTest {
   }
 
   @Test
-  void getAllCategories() {
+  void getAllCustomers() {
     //given
     List<Customer> customers = Arrays.asList(new Customer(), new Customer(), new Customer());
 
@@ -52,23 +55,98 @@ public class CustomerServiceTest {
   }
 
   @Test
-  void getCustomerByFirstNameAndLastName() {
+  void getCustomerById() throws RuntimeException {
     //given
     Customer customer = new Customer();
     customer.setId(ID);
     customer.setFirstName(FIRST_NAME);
     customer.setLastName(LAST_NAME);
 
-    when(customerRepository.getCustomerByFirstNameAndLastName(FIRST_NAME, LAST_NAME)).thenReturn(customer);
+    Optional<Customer> optionalCustomer = Optional.of(customer);
+
+    when(customerRepository.findById(anyLong())).thenReturn(optionalCustomer);
 
     //when
-    CustomerDTO customerDTO = customerService.getCustomerByFirstNameAndLastName(FIRST_NAME, LAST_NAME);
+    CustomerDTO customerDTO = customerService.getCustomerById(ID);
 
     //then
     assertEquals(FIRST_NAME, customerDTO.getFirstname());
     assertEquals(LAST_NAME, customerDTO.getLastname());
-    assertEquals(ID, customerDTO.getId());
+    assertEquals("/api/v1/customers/" + ID, customerDTO.getUrl());
+  }
+
+  @Test
+  void getCustomerByFirstNameAndLastName() throws RuntimeException {
+    //given
+    Customer customer = new Customer();
+    customer.setId(ID);
+    customer.setFirstName(FIRST_NAME);
+    customer.setLastName(LAST_NAME);
+
+    List<Customer> customers = Arrays.asList(customer, new Customer(), new Customer());
+
+    Optional<List<Customer>> optionalCustomer = Optional.of(customers);
+
+    when(customerRepository.getCustomerByFirstNameAndLastName(FIRST_NAME, LAST_NAME)).thenReturn(optionalCustomer);
+
+    //when
+    List<CustomerDTO> customerList = customerService.getCustomerByFirstNameAndLastName(FIRST_NAME, LAST_NAME);
+
+    //then
+    assertEquals(3, customerList.size());
+    assertEquals(FIRST_NAME, customerList.get(0)
+      .getFirstname());
+    assertEquals(LAST_NAME, customerList.get(0)
+      .getLastname());
+    assertEquals("/api/v1/customers/" + ID, customerList.get(0)
+      .getUrl());
 
   }
+
+  @Test
+  void createCustomerTest() {
+    //given
+    CustomerDTO customerDTO = new CustomerDTO();
+    customerDTO.setFirstname(FIRST_NAME);
+    customerDTO.setLastname(LAST_NAME);
+
+    Customer customer = new Customer();
+    customer.setId(ID);
+    customer.setFirstName(FIRST_NAME);
+    customer.setLastName(LAST_NAME);
+
+    when(customerRepository.save(any())).thenReturn(customer);
+
+    //when
+    CustomerDTO customerDTOafterSave = customerService.createNewCustomer(customerDTO);
+
+    //then
+    assertEquals(FIRST_NAME, customerDTOafterSave.getFirstname());
+    assertEquals(LAST_NAME, customerDTOafterSave.getLastname());
+    assertEquals("/api/v1/customers/" + ID, customerDTOafterSave.getUrl());
+  }
+
+  @Test
+  void saveCustomerByDTO() {
+    //given
+    CustomerDTO customerDTO = new CustomerDTO();
+    customerDTO.setFirstname(FIRST_NAME);
+    customerDTO.setLastname(LAST_NAME);
+
+    Customer customer = new Customer();
+    customer.setId(ID);
+    customer.setFirstName(FIRST_NAME);
+    customer.setLastName(LAST_NAME);
+
+    when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+    //when
+    CustomerDTO savedDto = customerService.saveCustomerByDTO(1L, customerDTO);
+
+    //then
+    assertEquals(customerDTO.getFirstname(), savedDto.getFirstname());
+    assertEquals("/api/v1/customers/" + ID, savedDto.getUrl());
+  }
+
 
 }

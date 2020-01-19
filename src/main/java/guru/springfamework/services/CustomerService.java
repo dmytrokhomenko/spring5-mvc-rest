@@ -9,8 +9,16 @@ import java.util.List;
  */
 public interface CustomerService {
 
-  CustomerDTO getCustomerByFirstNameAndLastName(String firstName, String lastName);
+  List<CustomerDTO> getCustomerByFirstNameAndLastName(String firstName, String lastName) throws RuntimeException;
 
   List<CustomerDTO> getAllCustomers();
+
+  CustomerDTO getCustomerById(Long id) throws RuntimeException;
+
+  CustomerDTO createNewCustomer(CustomerDTO customerDTO);
+
+  CustomerDTO saveCustomerByDTO(Long id, CustomerDTO customerDTO);
+
+  CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO);
 
 }

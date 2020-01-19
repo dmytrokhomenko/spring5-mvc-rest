@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Dmytro.Khomenko on 15.01.2020.
@@ -21,9 +19,17 @@ public class CustomerController {
 
   private final CustomerService customerService;
 
-  @GetMapping("bynameandlastname")
-  public ResponseEntity<CustomerDTO> getCustomerByFirstNameAndLastName(@RequestParam String firstname, @RequestParam String lastname) {
-    return new ResponseEntity<>(customerService.getCustomerByFirstNameAndLastName(firstname, lastname), HttpStatus.OK);
+  @GetMapping("/{id}")
+  public ResponseEntity<CustomerDTO> getCustomerByFirstNameAndLastName(@PathVariable Long id) throws RuntimeException {
+    return new ResponseEntity<>(customerService.getCustomerById(id), HttpStatus.OK);
+  }
+
+  @GetMapping("/bynameandlastname")
+  public ResponseEntity<CustomerListDTO> getCustomerByFirstNameAndLastName(@RequestParam String firstname, @RequestParam String lastname) throws
+    RuntimeException {
+    CustomerListDTO customerListDTO = new CustomerListDTO();
+    customerListDTO.setCustomers(customerService.getCustomerByFirstNameAndLastName(firstname, lastname));
+    return new ResponseEntity<>(customerListDTO, HttpStatus.OK);
   }
 
   @GetMapping()
@@ -32,6 +38,18 @@ public class CustomerController {
     customerListDTO.setCustomers(customerService.getAllCustomers());
 
     return new ResponseEntity<>(customerListDTO, HttpStatus.OK);
+  }
+
+  @PostMapping()
+  public ResponseEntity<CustomerDTO> createNewCustomer(@RequestBody CustomerDTO customerDTO) {
+    CustomerDTO createdCustomerDTO = customerService.createNewCustomer(customerDTO);
+    return new ResponseEntity<>(createdCustomerDTO, HttpStatus.CREATED);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<CustomerDTO> saveCustomerByDTO(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    CustomerDTO createdCustomerDTO = customerService.saveCustomerByDTO(id, customerDTO);
+    return new ResponseEntity<>(createdCustomerDTO, HttpStatus.OK);
   }
 
 }
