@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
 
+  public static final String CUSTOMERS_BASE_URL = "/api/v1/customers/";
   private final CustomerService customerService;
 
   @GetMapping("/{id}")
@@ -47,11 +48,22 @@ public class CustomerController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<CustomerDTO> saveCustomerByDTO(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+  public ResponseEntity<CustomerDTO> updateCustomerByDTO(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
     CustomerDTO createdCustomerDTO = customerService.saveCustomerByDTO(id, customerDTO);
     return new ResponseEntity<>(createdCustomerDTO, HttpStatus.OK);
   }
 
+  @PatchMapping("/{id}")
+  public ResponseEntity<CustomerDTO> patchCustomerByDTO(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    CustomerDTO updatedCustomer = customerService.patchCustomer(id, customerDTO);
+    return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Long> deleteCustomerById(@PathVariable Long id) {
+    customerService.deleteCustomerById(id);
+    return new ResponseEntity<>(id, HttpStatus.OK);
+  }
 }
 
 
